@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import ArticleList from '../components/ArticleList.astro';
+import { site } from '../site.config';
+import hero from '../assets/home/hero.png';
+
+const byDateDesc = <T extends { data: { date: Date } }>(a: T, b: T) =>
+  b.data.date.valueOf() - a.data.date.valueOf();
+
+const features = (await getCollection('features', ({ data }) => !data.draft)).sort(byDateDesc);
+const guides = (await getCollection('guides', ({ data }) => !data.draft)).sort(byDateDesc);
+---
+
+<Base>
+  <section class="hero">
+    <div>
+      <h1>{site.modName}</h1>
+      <p class="tagline">{site.tagline}</p>
+      <p class="versions">
+        <span>遊戲版本：{site.gameVersion}</span>
+        <span>模組版本：{site.modVersion}</span>
+      </p>
+      <a class="btn" href={site.links.download}>下載模組</a>
+    </div>
+    <Image src={hero} alt={`${site.modName} 主視覺`} width={1200} height={630} />
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>最新功能</h2>
+      <a href="/features/">查看全部</a>
+    </div>
+    <ArticleList entries={features.slice(0, 3)} section="features" />
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>最新攻略</h2>
+      <a href="/guides/">查看全部</a>
+    </div>
+    <ArticleList entries={guides.slice(0, 3)} section="guides" />
+  </section>
+</Base>

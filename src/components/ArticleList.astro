@@ -1,0 +1,51 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entries: CollectionEntry<'features' | 'guides'>[];
+  section: 'features' | 'guides';
+}
+
+const { entries, section } = Astro.props;
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat('zh-TW', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+---
+
+<ul class="cards" data-article-list>
+  {
+    entries.map((entry) => (
+      <li class="card" data-url={`/${section}/${entry.id}/`}>
+        {entry.data.cover && (
+          <a href={`/${section}/${entry.id}/`} aria-hidden="true" tabindex="-1">
+            <Image
+              src={entry.data.cover}
+              alt={entry.data.title}
+              width={480}
+              height={270}
+            />
+          </a>
+        )}
+        <div class="card-body">
+          <h3>
+            <a href={`/${section}/${entry.id}/`}>{entry.data.title}</a>
+          </h3>
+          <p>{entry.data.description}</p>
+          <time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time>
+          {entry.data.tags.length > 0 && (
+            <ul class="tags">
+              {entry.data.tags.map((tag) => (
+                <li>{tag}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </li>
+    ))
+  }
+</ul>

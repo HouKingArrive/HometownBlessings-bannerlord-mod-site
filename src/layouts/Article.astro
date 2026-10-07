@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Base from './Base.astro';
+
+interface Props {
+  entry: CollectionEntry<'features' | 'guides'>;
+  section: 'features' | 'guides';
+}
+
+const { entry, section } = Astro.props;
+const { Content } = await render(entry);
+
+const sectionLabel = section === 'features' ? '功能介紹' : '攻略玩法';
+const filterType = section === 'features' ? 'feature' : 'guide';
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat('zh-TW', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+---
+
+<Base title={entry.data.title} description={entry.data.description}>
+  <article
+    class="article"
+    data-pagefind-body
+    data-pagefind-filter={`type:${filterType}`}
+  >
+    <h1 data-pagefind-weight="7">{entry.data.title}</h1>
+    <div class="article-meta">
+      <span>發表：<time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time></span>
+      {
+        entry.data.updated && (
+          <span>
+            更新：<time datetime={entry.data.updated.toISOString()}>{formatDate(entry.data.updated)}</time>
+          </span>
+        )
+      }
+      {
+        entry.data.tags.length > 0 && (
+          <ul class="tags" data-pagefind-weight="10">
+            {entry.data.tags.map((tag) => (
+              <li>{tag}</li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+  <a class="back-link" href={`/${section}/`}>← 返回{sectionLabel}列表</a>
+</Base>

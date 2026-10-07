@@ -1,0 +1,100 @@
+---
+interface Props {
+  type: 'feature' | 'guide';
+}
+
+const { type } = Astro.props;
+---
+
+<div class="search" data-type={type}>
+  <input type="search" placeholder="搜尋文章…" aria-label="搜尋文章" />
+  <p class="search-status" role="status" hidden></p>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.search');
+
+  if (root) {
+    const input = root.querySelector<HTMLInputElement>('input');
+    const status = root.querySelector<HTMLElement>('.search-status');
+    const list = document.querySelector<HTMLElement>('[data-article-list]');
+    const cards = list
+      ? Array.from(list.querySelectorAll<HTMLElement>('.card'))
+      : [];
+    const cardByUrl = new Map<string, HTMLElement>();
+    for (const card of cards) {
+      if (card.dataset.url) cardByUrl.set(card.dataset.url, card);
+    }
+    const type = root.dataset.type;
+    let pagefind: any;
+    let timer: number | undefined;
+
+    async function load() {
+      if (!pagefind) {
+        pagefind = await import(/* @vite-ignore */ '/pagefind/pagefind.js');
+        // 關閉標題預設的 5 倍加成，讓排序依標籤 > 標題 > 內文的權重
+        await pagefind.options({ ranking: { metaWeights: { title: 1.0 } } });
+        await pagefind.init();
+      }
+      return pagefind;
+    }
+
+    function showAll() {
+      if (list) {
+        for (const card of cards) {
+          card.hidden = false;
+          list.append(card);
+        }
+      }
+      if (status) {
+        status.hidden = true;
+        status.textContent = '';
+      }
+    }
+
+    async function run(q: string) {
+      if (!q.trim()) {
+        showAll();
+        return;
+      }
+
+      let pf;
+      try {
+        pf = await load();
+      } catch (err) {
+        console.warn(
+          '[search] Pagefind 找不到索引。開發模式沒有索引，請使用 npm run build && npm run preview 測試搜尋。',
+          err,
+        );
+        return;
+      }
+
+      const res = await pf.search(q, { filters: { type } });
+      const items = await Promise.all(res.results.map((r: any) => r.data()));
+
+      let count = 0;
+      if (list) {
+        for (const card of cards) card.hidden = true;
+        for (const d of items) {
+          const card = cardByUrl.get(d.url);
+          if (card) {
+            card.hidden = false;
+            list.append(card);
+            count++;
+          }
+        }
+      }
+
+      if (status) {
+        status.hidden = false;
+        status.textContent = count > 0 ? `找到 ${count} 篇` : '找不到相關文章';
+      }
+    }
+
+    input?.addEventListener('input', () => {
+      if (!input) return;
+      clearTimeout(timer);
+      timer = window.setTimeout(() => run(input.value), 200);
+    });
+  }
+</script>

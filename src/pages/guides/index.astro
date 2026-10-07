@@ -1,0 +1,18 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import Search from '../../components/Search.astro';
+
+const byDateDesc = <T extends { data: { date: Date } }>(a: T, b: T) =>
+  b.data.date.valueOf() - a.data.date.valueOf();
+
+const entries = (await getCollection('guides', ({ data }) => !data.draft)).sort(byDateDesc);
+---
+
+<Base title="攻略玩法" description="這個模組的攻略與玩法教學。">
+  <h1>攻略玩法</h1>
+  <p class="page-intro">遊玩這個模組的技巧與攻略，共 {entries.length} 篇。</p>
+  <Search type="guide" />
+  <ArticleList entries={entries} section="guides" />
+</Base>

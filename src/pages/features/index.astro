@@ -1,0 +1,18 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import Search from '../../components/Search.astro';
+
+const byDateDesc = <T extends { data: { date: Date } }>(a: T, b: T) =>
+  b.data.date.valueOf() - a.data.date.valueOf();
+
+const entries = (await getCollection('features', ({ data }) => !data.draft)).sort(byDateDesc);
+---
+
+<Base title="功能介紹" description="這個模組提供的功能與系統說明。">
+  <h1>功能介紹</h1>
+  <p class="page-intro">模組新增與修改的功能，共 {entries.length} 篇。</p>
+  <Search type="feature" />
+  <ArticleList entries={entries} section="features" />
+</Base>

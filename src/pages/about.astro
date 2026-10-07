@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config';
+
+const contacts = [
+  { label: '下載模組', href: site.links.download },
+  { label: 'GitHub', href: site.links.github },
+  { label: 'Discord', href: site.links.discord },
+];
+---
+
+<Base title="關於我們" description={`關於 ${site.modName} 與這個網站的說明。`}>
+  <h1>關於我們</h1>
+  <p>
+    這裡是 {site.modName} 的介紹網站。我們熱愛《騎馬與砍殺2：Bannerlord》，希望透過這個模組
+    帶給玩家更豐富的戰場與王國經營體驗。
+  </p>
+  <p>
+    本站內容包含模組功能介紹與攻略玩法，所有文章都會持續更新。若你對模組有任何建議或回報，
+    歡迎透過下方的連結與我們聯絡。
+  </p>
+
+  <h2>聯絡與下載</h2>
+  <ul>
+    {
+      contacts.map((contact) => (
+        <li>
+          <a href={contact.href} target="_blank" rel="noopener noreferrer">
+            {contact.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Base>
