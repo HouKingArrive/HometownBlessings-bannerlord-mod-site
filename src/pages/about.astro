@@ -6,7 +6,7 @@ const contacts = [
   { label: '下載模組', href: site.links.download },
   { label: 'GitHub', href: site.links.github },
   { label: 'Discord', href: site.links.discord },
-];
+].filter((contact) => contact.href && contact.href !== '#');
 ---
 
 <Base title="關於我們" description={`關於 ${site.modName} 與這個網站的說明。`}>

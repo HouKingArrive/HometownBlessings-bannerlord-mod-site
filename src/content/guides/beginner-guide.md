@@ -4,6 +4,7 @@ description: 從建立角色到第一場戰場，帶你快速上手這個模組�
 date: 2026-09-25
 tags: [新手, 攻略]
 cover: ../../assets/guides/beginner.png
+draft: true
 ---
 
 <!-- 佔位內容，請替換 -->

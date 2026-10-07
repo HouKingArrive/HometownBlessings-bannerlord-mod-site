@@ -18,7 +18,7 @@ const footerLinks = [
   { label: '下載', href: site.links.download },
   { label: 'GitHub', href: site.links.github },
   { label: 'Discord', href: site.links.discord },
-];
+].filter((link) => link.href && link.href !== '#');
 ---
 
 <!doctype html>

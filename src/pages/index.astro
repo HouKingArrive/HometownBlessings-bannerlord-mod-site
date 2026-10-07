@@ -10,7 +10,8 @@ const byDateDesc = <T extends { data: { date: Date } }>(a: T, b: T) =>
   b.data.date.valueOf() - a.data.date.valueOf();
 
 const features = (await getCollection('features', ({ data }) => !data.draft)).sort(byDateDesc);
-const guides = (await getCollection('guides', ({ data }) => !data.draft)).sort(byDateDesc);
+// 攻略已暫時隱藏，需要時再打開
+// const guides = (await getCollection('guides', ({ data }) => !data.draft)).sort(byDateDesc);
 ---
 
 <Base>
@@ -22,9 +23,13 @@ const guides = (await getCollection('guides', ({ data }) => !data.draft)).sort(b
         <span>遊戲版本：{site.gameVersion}</span>
         <span>模組版本：{site.modVersion}</span>
       </p>
-      <a class="btn" href={site.links.download}>下載模組</a>
+      {
+        site.links.download !== '#' && (
+          <a class="btn" href={site.links.download}>下載模組</a>
+        )
+      }
     </div>
-    <Image src={hero} alt={`${site.modName} 主視覺`} width={1200} height={630} />
+    <Image src={hero} alt={`${site.modName} 主視覺`} width={1040} height={600} />
   </section>
 
   <section>
@@ -35,6 +40,7 @@ const guides = (await getCollection('guides', ({ data }) => !data.draft)).sort(b
     <ArticleList entries={features.slice(0, 3)} section="features" />
   </section>
 
+  <!-- 攻略已暫時隱藏，需要時再打開
   <section>
     <div class="section-head">
       <h2>最新攻略</h2>
@@ -42,4 +48,5 @@ const guides = (await getCollection('guides', ({ data }) => !data.draft)).sort(b
     </div>
     <ArticleList entries={guides.slice(0, 3)} section="guides" />
   </section>
+  -->
 </Base>
